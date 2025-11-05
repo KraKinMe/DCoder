@@ -9,7 +9,7 @@ function Chart({ data, labels }) {
       {
         label: 'Solved',
         data: data,
-        backgroundColor: 'var(--color-accent)'
+        backgroundColor: "#964734"
       }
     ]
   };
