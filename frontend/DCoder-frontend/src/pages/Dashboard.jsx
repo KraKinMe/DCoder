@@ -1,22 +1,43 @@
-import ThemeToggle from '../components/ThemeToggle';
-import GithubAvatar from '../components/GithubAvatar';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import StatsCard from '../components/StatsCard';
 import Chart from '../components/Chart';
+import Spinner from '../components/Spinner';
 
-// For test/demo purposes, define mock user:
-const mockUser = {
-  avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
-  username: "octocat",
-  githubRepos: 42
-};
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function Dashboard() {
+  const [stats, setStats] = useState(null);      // Store user stats
+  const [loading, setLoading] = useState(true);  // Show spinner during fetch
+  const [error, setError] = useState('');        // Error messages
+
+  useEffect(() => {
+    // Fetch the stats on mount!
+    axios.get(`${API_BASE}/api/user/stats`, { withCredentials: true })
+      .then(res => {
+        setStats(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.response?.data?.error || 'Failed to fetch stats');
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return <div style={{ color: 'red' }}>{error}</div>;
+  }
+
+  // If stats exist, display cards and chart
   return (
     <div>
-      <ThemeToggle />
-      <GithubAvatar avatarUrl={mockUser.avatarUrl} username={mockUser.username} />
-      <StatsCard title="GitHub Repos" stat={mockUser.githubRepos} />
-      <Chart labels={["Jan","Feb","Mar"]} data={[8, 18, 5]} />
+      <StatsCard title="GitHub Repos" stat={stats.githubRepos} />
+      <StatsCard title="LeetCode Solved" stat={stats.leetcodeSolved} />
+      <Chart labels={stats.months} data={stats.monthlySolves} />
     </div>
   );
 }
