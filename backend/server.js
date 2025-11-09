@@ -1,4 +1,4 @@
-process.env.UV_THREADPOOL_SIZE = 16; 
+process.env.UV_THREADPOOL_SIZE = Math.min(32, require('os').cpus().length * 2);
 
 const express = require('express');
 
