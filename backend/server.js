@@ -1,3 +1,5 @@
+process.env.UV_THREADPOOL_SIZE = 16; 
+
 const express = require('express');
 
 const cors = require('cors');
